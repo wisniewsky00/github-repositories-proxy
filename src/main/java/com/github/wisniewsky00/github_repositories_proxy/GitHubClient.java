@@ -19,6 +19,9 @@ class GitHubClient {
         return restClient.get()
                 .uri("/users/{username}/repos", username)
                 .retrieve()
+                .onStatus((httpStatusCode -> httpStatusCode.value() == 404), ((_, _) -> {
+                    throw new UserNotFoundException(username);
+                }))
                 .body(new ParameterizedTypeReference<>() {});
     }
 

@@ -21,6 +21,9 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-restclient")
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
+
+	testImplementation("org.wiremock:wiremock-standalone:3.13.2")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 tasks.withType<Test> {

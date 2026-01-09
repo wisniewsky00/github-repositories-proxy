@@ -14,14 +14,14 @@ class RestClientConfig {
     private String githubPersonalAccessToken;
 
     @Bean
-    RestClient restClient() {
+    RestClient restClient(@Value("${github.api.base-url}") String baseUrl) {
 
             if (githubPersonalAccessToken == null) {
                 throw new IllegalStateException("GitHub personal access token cannot be null");
             }
 
             return builder()
-                    .baseUrl("https://api.github.com")
+                    .baseUrl(baseUrl)
                     .defaultHeader("Accept", "application/vnd.github+json")
                     .defaultHeader("Authorization", "Bearer " + githubPersonalAccessToken)
                     .build();

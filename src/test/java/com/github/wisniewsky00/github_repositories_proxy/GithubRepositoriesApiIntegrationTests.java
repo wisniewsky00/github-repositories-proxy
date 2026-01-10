@@ -14,6 +14,7 @@ import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @WireMockTest(httpPort = 8089)
@@ -87,7 +88,7 @@ class GithubRepositoriesApiIntegrationTests {
 		stubFor(get(urlEqualTo("/users/invalid-user/repos"))
 				.willReturn(notFound()));
 
-		Throwable exception = org.assertj.core.api.Assertions.catchThrowable(() ->
+		Throwable exception = catchThrowable(() ->
 				client.get()
 						.uri("/api/invalid-user/repositories")
 						.retrieve()
@@ -106,5 +107,25 @@ class GithubRepositoriesApiIntegrationTests {
 		verify(getRequestedFor(urlEqualTo("/users/invalid-user/repos")));
 	}
 
+	@Test
+	void getRepositories_whenUserHasNoNonForkRepositories_returnsEmptyList() {
 
+		stubFor(get("/users/testuser/repos").willReturn(okJson("""
+                [
+                  {
+                    "name": "forked-repo",
+                    "owner": { "login": "testuser" },
+                    "fork": true
+                  }
+                ]
+                """)));
+
+		List<RepositoryResponse> responseList = client.get()
+				.uri("/api/testuser/repositories")
+				.retrieve()
+				.body(new ParameterizedTypeReference<>() {});
+
+		assertThat(responseList).isEmpty();
+		verify(getRequestedFor(urlEqualTo("/users/testuser/repos")));
+	}
 }

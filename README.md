@@ -102,7 +102,8 @@ GET /api/invalid-user/repositories
 ### Integration Tests
 The project contains integration tests that verify:
 * Successful retrieval of repositories and branches
-* Filtering out forked repositories 
+* Filtering out forked repositories
+* Returns an empty list when the user has no repositories or only fork repositories
 * Proper handling of non-existing users (404)
 
 External GitHub API calls are mocked using **WireMock**.
